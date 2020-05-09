@@ -17,18 +17,21 @@ annotation.df <- data.frame(rownames(annotation.table), annotation.table$chr, an
                             annotation.table$UCSC_RefGene_Name, annotation.table$HMM_Island, annotation.table$Enhancer, 
                             annotation.table$Regulatory_Feature_Group)
 
-merge.table <- inner_join(methylation.results, annotation.df, by = c("Gene.name"="rownames.annotation.table.") )
+merge.table <- inner_join(methylation.results, annotation.df, by = c("Gene.name"="rownames.annotation.table") )
 
 merge.table$START <- merge.table$annotation.table.pos
 merge.table$END  <- merge.table$annotation.table.pos + 1
 
+merge.table.only.DMRs <- merge.table %>%  filter(p.value_bh < 0.05)
+
 #bed file
 
-bed.table <- merge.table %>% select(annotation.table.chr, START, END, Gene.name)
-write.table (bed.table, "TCGA.450kprobes.bed", sep = "\t" , quote = F, row.names = F, col.names = F)
+bed.table <- merge.table.only.DMRs %>% select(annotation.table.chr, START, END, Gene.name)
+write.table (bed.table, "TCGA.ARID2.mut.analysis.DMRs.bed", sep = "\t" , quote = F, row.names = F, col.names = F)
 
 
 write.csv(merge.table, "Final.merged.table.methylation.annotated.with.mutation.annot.csv")
+
 
 
 methylation.with.counts <- read.table("TCGA.450kprobes.ext.500.w.counts.MITF.REST.ARID2.FOSL2.bed", sep = "\t")
