@@ -35,9 +35,12 @@ methylation.with.counts <- read.table("TCGA.450kprobes.ext.500.w.counts.MITF.RES
 
 methylation.final <- inner_join(methylation.with.counts,merge.table, by = c("V4" ="Gene.name") )
 
-methylation.final <- methylation.final %>%  mutate(methylation.status = ifelse(p.value_bh < 0.05 & Estimate_phenotype > 0.5, 'gain', "constant"))
+methylation.final <- methylation.final %>%  mutate(methylation.status = ifelse(p.value_bh < 0.1 & Estimate_phenotype > 0.5, 'gain', "constant"))
+table(methylation.final$methylation.status)
+
+colnames(methylation.final)[c(5,6,7,8)] <- c("MITF", "REST", "ARID2", "FOSL2")
 
 
-ggplot(methylation.final, aes( x = methylation.status, y = log2(V7 + 1), fill = methylation.status )) +
+ggplot(methylation.final, aes( x = methylation.status, y = log2(FOSL2 + 1), fill = methylation.status )) +
   geom_boxplot()
 
